@@ -1,0 +1,43 @@
+---
+
+- name: provision centos web server
+  vars:
+    ruby_version: 2.2.2
+  remote_user: "{{ user }}"
+  hosts: all
+  become: yes
+  roles:
+    - role: essentials
+      tags: essentials
+
+    - role: iptables
+      tags: iptables
+
+    - role: nodejs
+      tags: nodejs
+
+    - role: rvm
+      tags: rvm
+
+    - role: nginx
+      tags: nginx
+
+    - role: redis
+      tags: redis
+
+    - role: postgresql
+      tags: postgresql
+
+    - role: deploy
+      tags:
+        - deploy
+        - kanban
+      app_name: kanban
+      git_repo: https://github.com/somlor/kanban
+      git_branch: master
+      shared_dirs:
+        - tmp
+        - log
+      shared_files:
+        - .env
+      force: no

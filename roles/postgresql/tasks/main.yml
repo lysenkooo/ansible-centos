@@ -1,0 +1,38 @@
+---
+
+- name: postgresql repo is installed
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+    state: present
+
+- name: postgresql is installed
+  yum: name="{{ item }}" state=present
+  with_items:
+    - postgresql96-server
+    - postgresql96-devel
+    - postgresql96-contrib
+
+- name: postgresql is initialized
+  command: /usr/pgsql-9.6/bin/postgresql96-setup initdb
+  args:
+    creates: "/var/lib/pgsql/9.6/data/pg_hba.conf"
+
+- name: fix config
+  replace:
+    dest: "/var/lib/pgsql/9.6/data/pg_hba.conf"
+    regexp: "ident$"
+    replace: "md5"
+
+- name: postgresql is enabled and started
+  service: name=postgresql-9.6 state=started enabled=yes
+
+- name: psycopg2 is installed
+  pip: name=psycopg2
+
+- name: bundler is configured
+  lineinfile:
+    dest: "/home/{{ user }}/.bundle/config"
+    line: 'BUNDLE_BUILD__PG: "--with-pg-config=/usr/pgsql-9.6/bin/pg_config"'
+    regexp: '^BUNDLE_BUILD__PG:'
+    create: yes
+  become_user: "{{ user }}"

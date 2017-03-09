@@ -1,0 +1,7 @@
+---
+
+- name: nodejs repo is installed
+  yum: name=https://rpm.nodesource.com/pub_6.x/el/7/SRPMS/nodesource-release-el7-1.noarch.rpm state=present
+
+- name: nodejs is installed
+  yum: name=nodejs state=present

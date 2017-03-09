@@ -1,0 +1,6 @@
+---
+
+- name: iptables rules are installed
+  template: src=rules dest=/etc/sysconfig/iptables backup=yes
+  notify:
+    - reload iptables
